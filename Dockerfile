@@ -1,13 +1,5 @@
 # Stadio di build
-FROM ubuntu:latest AS build
-
-# Aggiorna il sistema e installa OpenJDK 21 e Maven
-RUN apt-get update && \
-    apt-get install -y openjdk-21-jdk maven
-
-# Verifica la versione di Java
-RUN java -version
-RUN javac -version
+FROM maven:3.8.5-openjdk-11 AS build
 
 # Imposta la directory di lavoro all'interno del container
 WORKDIR /app
@@ -24,9 +16,6 @@ RUN mvn clean package -DskipTests
 
 # Stadio di runtime
 FROM openjdk:21-jdk-slim
-
-# Verifica la versione di Java nel secondo stadio
-RUN java -version
 
 # Espone la porta 8080
 EXPOSE 8080
