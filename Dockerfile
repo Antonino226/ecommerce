@@ -1,28 +1,16 @@
-# Stadio di build
-FROM maven:3.8.5-openjdk-11 AS build
-
-# Imposta la directory di lavoro all'interno del container
+#
+# Build stage
+#
+FROM maven:3.8.3-openjdk-21 AS build
 WORKDIR /app
+COPY . /app/
+RUN mvn clean package
 
-# Copia il file pom.xml e scarica le dipendenze di Maven
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
-# Copia il resto del progetto
-COPY . .
-
-# Compila il progetto Maven
-RUN mvn clean package -DskipTests
-
-# Stadio di runtime
-FROM openjdk:21-jdk-slim
-
-# Espone la porta 8080
+#
+# Package stage
+#
+FROM openjdk:17-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar /app/app.jar
 EXPOSE 8080
-
-# Copia il file JAR dal primo stadio di costruzione
-COPY --from=build /app/target/*.jar app.jar
-
-# Specifica il comando da eseguire quando il container parte
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
+ENTRYPOINT ["java","-jar","app.jar"]
