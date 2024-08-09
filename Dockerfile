@@ -1,14 +1,20 @@
-# Build stage
-#
-FROM maven:3.8.7-openjdk-11 AS build
-WORKDIR /app
-COPY . /app/
-RUN mvn clean package
+# Usa una base image di OpenJDK 11 (puoi cambiare la versione di Java se necessario)
+FROM openjdk:11-jdk-slim
 
-# Package stage
-#
-FROM openjdk:11-alpine
+# Imposta la directory di lavoro all'interno del container
 WORKDIR /app
-COPY --from=build /app/target/*.jar /app/app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# Copia il file pom.xml e scarica le dipendenze Maven (per evitare di scaricarle di nuovo in caso di cambiamenti nel codice)
+COPY pom.xml ./
+COPY src ./src
+RUN mvn -B dependency:resolve dependency:resolve-plugins
+
+# Copia il resto del codice sorgente e compila l'applicazione
+COPY . ./
+RUN mvn -B clean package -DskipTests
+
+# Esponi la porta su cui gira l'applicazione (definita in application.properties)
+EXPOSE 9090
+
+# Esegui l'applicazione
+CMD ["java", "-Xms512m", "-Xmx1024m", "-jar", "target/ecommerce-0.0.1-SNAPSHOT.jar"]
