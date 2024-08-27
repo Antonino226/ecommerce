@@ -2,7 +2,6 @@ package com.youtube.ecommerce.controller;
 
 import com.youtube.ecommerce.entity.Category;
 import com.youtube.ecommerce.entity.ImageModel;
-import com.youtube.ecommerce.entity.Product;
 import com.youtube.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,19 +74,6 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/{categoryName}")
-    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String categoryName) {
-        try {
-            List<Product> products = categoryService.getProductsByCategory(categoryName);
-            if (products != null) {
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     
     @PreAuthorize("hasRole('Admin')")
     @PostMapping(value = "/addNewCategory", consumes = { "multipart/form-data" })

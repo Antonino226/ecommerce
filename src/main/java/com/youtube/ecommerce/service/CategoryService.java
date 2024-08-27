@@ -64,14 +64,6 @@ public class CategoryService {
         return categoryDao.findByCategoryId(categoryId);
     }
 
-    public List<Product> getProductsByCategory(String categoryName) {        
-        List<Product> products = productDao.findByCategory_CategoryName(categoryName);
-        if (products != null) {
-            return products;
-        } else {
-            return null; // Puoi anche restituire una lista vuota invece di null se preferisci
-        }
-    }
     
     public Category addCategory(Category category) {
         return categoryDao.save(category);

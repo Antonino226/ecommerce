@@ -101,8 +101,16 @@ public class ProductService {
         }
     }
 
-    public List<Product> getProductsByCategory(String categoryName) {
-        return productDao.findByCategory_CategoryName(categoryName);
+    public Page<Product> getProductsByCategory(String categoryName, String searchKey, Pageable pageable) {
+        if (searchKey == null || searchKey.isEmpty()) {
+            // Restituisce tutti i prodotti di una categoria specifica senza filtro di ricerca
+            return productDao.findByCategory_CategoryName(categoryName, pageable);
+        } else {
+            // Restituisce i prodotti di una categoria specifica con filtro di ricerca su nome o descrizione
+            return productDao.findByCategory_CategoryNameAndProductNameContainingIgnoreCaseOrCategory_CategoryNameAndProductDescriptionContainingIgnoreCase(
+                categoryName, searchKey, categoryName, searchKey, pageable
+            );
+        }
     }
 
     public void deleteProduct(Integer productId) {

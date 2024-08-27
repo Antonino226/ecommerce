@@ -103,8 +103,18 @@ public class ProductController {
     }
     
     @GetMapping("/getProductsByCategory/{categoryName}")
-    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
-        return productService.getProductsByCategory(categoryName);
+    public ResponseEntity<List<Product>> getProductsByCategory(
+        @PathVariable String categoryName,
+        @RequestParam(defaultValue = "0") int pageNumber,
+        @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(defaultValue = "") String searchKey) {
+        try {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            Page<Product> products = productService.getProductsByCategory(categoryName, searchKey, pageable);
+            return new ResponseEntity<>(products.getContent(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @PreAuthorize("hasRole('Admin')")

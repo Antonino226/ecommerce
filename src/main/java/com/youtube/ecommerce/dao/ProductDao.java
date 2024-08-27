@@ -18,8 +18,12 @@ public interface ProductDao extends PagingAndSortingRepository<Product, Integer>
         String name, String description, Pageable pageable
     );
     
-    List<Product> findByCategory_CategoryName(String categoryName);
+    Page<Product> findByCategory_CategoryName(String categoryName, Pageable pageable);
 
+    // Ricerca prodotti per categoria e nome o descrizione del prodotto con paginazione
+    Page<Product> findByCategory_CategoryNameAndProductNameContainingIgnoreCaseOrCategory_CategoryNameAndProductDescriptionContainingIgnoreCase(
+        String categoryName, String productName, String categoryName2, String productDescription, Pageable pageable);
+    
 	public void deleteByProductId(Long productId);
 	
 	List<Product> findByCategory_CategoryId(Integer categoryId);
